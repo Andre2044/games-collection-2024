@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main bomb body -->
+  <circle cx="16" cy="18" r="12" fill="#333333"/>
+  <!-- Fuse -->
+  <path d="M16 6C16 6 18 4 20 2" stroke="#333333" stroke-width="3" stroke-linecap="round"/>
+  <!-- Highlight -->
+  <circle cx="13" cy="15" r="4" fill="#ffffff" fill-opacity="0.2"/>
+  <!-- Shine -->
+  <circle cx="13" cy="15" r="2" fill="#ffffff" fill-opacity="0.3"/>
+</svg>

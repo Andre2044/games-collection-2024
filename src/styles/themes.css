@@ -1,0 +1,73 @@
+/* Light theme (default) */
+body {
+  --cell-size: 40px;
+  --grid-color: #ccc;
+  --cell-bg: #f5f5f5;
+  --cell-bg-revealed: #e0e0e0;
+  --cell-bg-hover: #e6e6e6;
+  --cell-border: #ccc;
+  --header-bg: #f8f8f8;
+  --status-bar-bg: #f0f0f0;
+  --button-bg: #fff;
+  --button-border: #ccc;
+  --button-hover: #f0f0f0;
+  --button-active: #e0e0e0;
+  --text-color: #333;
+  --notification-error-bg: #f44336;
+  --notification-success-bg: #4caf50;
+  --notification-text: #fff;
+  --focus-outline: #2196f3;
+  --app-bg: #fff;
+  --cell-bg-mine: #f44336;
+  --pattern-stroke: rgba(0, 0, 0, 0.08);
+  --pattern-fill: rgba(0, 0, 0, 0.04);
+  
+  background-color: var(--app-bg);
+}
+
+/* Dark theme */
+body.dark-theme {
+  --cell-size: 40px;
+  --grid-color: #444;
+  --cell-bg: #2d2d2d;
+  --cell-bg-revealed: #2a2a2a;
+  --cell-bg-hover: #383838;
+  --cell-border: #555;
+  --header-bg: #2a2a2a;
+  --status-bar-bg: #2a2a2a;
+  --button-bg: #3a3a3a;
+  --button-border: #555;
+  --button-hover: #444;
+  --button-active: #555;
+  --text-color: #e0e0e0;
+  --notification-error-bg: #c62828;
+  --notification-success-bg: #2e7d32;
+  --notification-text: #fff;
+  --focus-outline: #64b5f6;
+  --app-bg: #1a1a1a;
+  --cell-bg-mine: #c62828;
+  --pattern-stroke: rgba(255, 255, 255, 0.08);
+  --pattern-fill: rgba(255, 255, 255, 0.04);
+  
+  /* Cell specific colors for dark theme */
+  --cell-shadow: rgba(0, 0, 0, 0.3);
+  --cell-inner-shadow: rgba(0, 0, 0, 0.2);
+  --cell-highlight: rgba(255, 255, 255, 0.1);
+  
+  background-color: var(--app-bg);
+}
+
+/* Theme transition */
+body, 
+.game-header, 
+.status-bar, 
+.game-board, 
+.cell, 
+.new-game-button, 
+.theme-toggle, 
+.difficulty-selector select {
+  transition: 
+    background-color 200ms ease, 
+    color 200ms ease, 
+    border-color 200ms ease;
+}

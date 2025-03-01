@@ -1,0 +1,8 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card background -->
+  <rect x="2" y="2" width="28" height="28" rx="3" fill="white" stroke="black" stroke-width="2"/>
+  
+  <!-- Spade symbol -->
+  <path d="M16 6C13 12 8 14 8 18C8 20.5 10 22 12 22C14 22 15 21 16 19C17 21 18 22 20 22C22 22 24 20.5 24 18C24 14 19 12 16 6Z" fill="black"/>
+  <path d="M13 22L16 28L19 22C19 22 17 23 16 23C15 23 13 22 13 22Z" fill="black"/>
+</svg>
