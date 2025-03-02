@@ -1,3 +1,7 @@
+import { toast } from 'react-hot-toast';
+
+type NotificationType = 'success' | 'error' | 'info' | 'warning';
+
 // Apply reveal animation to a cell
 export const animateCellReveal = (element: HTMLElement): void => {
   element.style.transition = 'transform 150ms ease-out, background-color 150ms ease-out';
@@ -28,35 +32,138 @@ export const animateMineExplosion = (element: HTMLElement): void => {
   }, 150);
 };
 
-// Show notification with fade
-export const showNotification = (message: string, type: 'error' | 'success' = 'error'): void => {
-  // Remove any existing notification
-  const existingNotification = document.querySelector('.game-notification');
-  if (existingNotification) {
-    document.body.removeChild(existingNotification);
-  }
+/**
+ * Show a toast notification with custom styling based on type
+ */
+export const showNotification = (message: string, type: NotificationType = 'info') => {
+  const getStyle = () => {
+    switch (type) {
+      case 'success':
+        return {
+          background: 'linear-gradient(90deg, rgba(16,185,129,0.9) 0%, rgba(5,150,105,0.9) 100%)',
+          color: '#ffffff',
+          icon: '🎉'
+        };
+      case 'error':
+        return {
+          background: 'linear-gradient(90deg, rgba(239,68,68,0.9) 0%, rgba(220,38,38,0.9) 100%)',
+          color: '#ffffff',
+          icon: '💥'
+        };
+      case 'warning':
+        return {
+          background: 'linear-gradient(90deg, rgba(245,158,11,0.9) 0%, rgba(217,119,6,0.9) 100%)',
+          color: '#ffffff',
+          icon: '⚠️'
+        };
+      case 'info':
+      default:
+        return {
+          background: 'linear-gradient(90deg, rgba(59,130,246,0.9) 0%, rgba(37,99,235,0.9) 100%)',
+          color: '#ffffff',
+          icon: '💡'
+        };
+    }
+  };
   
-  // Create notification element
-  const notification = document.createElement('div');
-  notification.className = `game-notification ${type}`;
-  notification.textContent = message;
-  notification.setAttribute('role', 'alert');
+  const style = getStyle();
   
-  // Add to DOM
-  document.body.appendChild(notification);
+  toast(message, {
+    style: {
+      background: style.background,
+      color: style.color,
+      padding: '0.75rem 1rem',
+      borderRadius: '0.5rem',
+      fontWeight: 500,
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem'
+    },
+    icon: style.icon,
+    position: 'bottom-center',
+    duration: 3000
+  });
+};
+
+/**
+ * Apply a confetti effect for celebrations
+ */
+export const showConfetti = () => {
+  if (typeof window === 'undefined') return;
   
-  // Trigger animation
+  // We would typically use a confetti library here
+  // This is a placeholder for actual confetti implementation
+  console.log('Confetti animation would play here');
+  
+  // For a real implementation, you would:
+  // 1. Import a confetti library like canvas-confetti
+  // 2. Configure and trigger the animation
+};
+
+/**
+ * Apply a shake animation to an element
+ */
+export const applyShakeAnimation = (element: HTMLElement | null) => {
+  if (!element) return;
+  
+  element.classList.add('shake-animation');
+  
+  // Remove the class after animation completes
   setTimeout(() => {
-    notification.classList.add('visible');
-  }, 10);
+    element.classList.remove('shake-animation');
+  }, 820); // 820ms matches our CSS animation duration
+};
+
+/**
+ * Apply a pulse animation to an element
+ */
+export const applyPulseAnimation = (element: HTMLElement | null) => {
+  if (!element) return;
   
-  // Remove after 3 seconds
+  element.classList.add('pulse-animation');
+  
+  // Remove the class after animation completes
   setTimeout(() => {
-    notification.classList.remove('visible');
-    setTimeout(() => {
-      if (notification.parentNode) {
-        document.body.removeChild(notification);
-      }
-    }, 300);
-  }, 3000);
+    element.classList.remove('pulse-animation');
+  }, 1000); // 1000ms matches our CSS animation duration
+};
+
+/**
+ * Apply a bounce animation to an element
+ */
+export const applyBounceAnimation = (element: HTMLElement | null) => {
+  if (!element) return;
+  
+  element.classList.add('bounce-animation');
+  
+  // Remove the class after animation completes
+  setTimeout(() => {
+    element.classList.remove('bounce-animation');
+  }, 1000); // 1000ms matches our CSS animation duration
+};
+
+/**
+ * Apply a fade in animation to an element
+ */
+export const applyFadeInAnimation = (element: HTMLElement | null) => {
+  if (!element) return;
+  
+  element.classList.add('fade-in-animation');
+  
+  // Remove the class after animation completes
+  setTimeout(() => {
+    element.classList.remove('fade-in-animation');
+  }, 500); // 500ms matches our CSS animation duration
+};
+
+/**
+ * Apply a float animation to an element
+ */
+export const applyFloatAnimation = (element: HTMLElement | null) => {
+  if (!element) return;
+  
+  element.classList.add('float-animation');
+  
+  // This is a continuous animation, so we don't remove the class
 };

@@ -1,65 +1,134 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import './styles/main.css';
-import './styles/themes.css';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ThemeProvider } from './context/ThemeContext';
+import Sidebar from './components/Sidebar';
 import Minesweeper from './pages/Minesweeper';
 import Blackjack from './pages/Blackjack';
+import Settings from './pages/Settings';
 import Footer from './components/Footer';
-import Sidebar from './components/Sidebar';
-import blackjackFavicon from './assets/blackjack-favicon.svg';
-import minesweeperFavicon from './assets/minesweeper-favicon.svg';
+import FaviconSwitcher from './components/FaviconSwitcher';
+import './styles/main.css';
 
-// Favicon switcher component
-const FaviconSwitcher = () => {
-  const location = useLocation();
+// Main application component
+const App: React.FC = () => {
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Force dark mode styling on the root element
   useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'icon';
-    link.type = 'image/svg+xml';
+    document.documentElement.style.backgroundColor = '#0f172a';
+    document.documentElement.style.colorScheme = 'dark';
+  }, []);
 
-    // Remove existing favicon
-    const existingFavicon = document.querySelector('link[rel="icon"]');
-    if (existingFavicon) {
-      document.head.removeChild(existingFavicon);
-    }
+  // Simulate loading time
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 800); // Slightly longer loading time for a better visual effect
+    return () => clearTimeout(timer);
+  }, []);
 
-    // Set new favicon based on route
-    if (location.pathname === '/blackjack') {
-      link.href = blackjackFavicon;
-      document.title = 'Blackjack - Game Center';
-    } else {
-      link.href = minesweeperFavicon;
-      document.title = 'Minesweeper - Game Center';
-    }
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
-    document.head.appendChild(link);
+  // Animation variants
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    enter: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } }
+  };
 
-    // Cleanup
-    return () => {
-      if (link.parentNode) {
-        document.head.removeChild(link);
-      }
-    };
-  }, [location]);
-
-  return null;
-};
-
-function App() {
   return (
-    <BrowserRouter>
-      <div className="app">
-        <FaviconSwitcher />
-        <Sidebar />
-        <Routes>
-          <Route path="/" element={<Minesweeper />} />
-          <Route path="/blackjack" element={<Blackjack />} />
-        </Routes>
-        <Footer />
+    <ThemeProvider>
+      <div className="app-container dark">
+        <BrowserRouter>
+          <FaviconSwitcher />
+          
+          {loading ? (
+            <div className="flex items-center justify-center h-screen w-screen bg-gray-900">
+              <div className="text-center">
+                <div className="w-16 h-16 border-4 border-gray-700 border-t-blue-500 rounded-full animate-spin spinner mx-auto"></div>
+                <p className="mt-4 text-gray-200">Loading your games...</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+              
+              <main className={`transition-all duration-300 ${sidebarOpen ? 'ml-[250px]' : 'ml-[60px]'}`}>
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route 
+                      path="/" 
+                      element={
+                        <motion.div
+                          className="page-container"
+                          key="home"
+                          initial="initial"
+                          animate="enter"
+                          exit="exit"
+                          variants={pageVariants}
+                        >
+                          <Minesweeper />
+                        </motion.div>
+                      } 
+                    />
+                    <Route 
+                      path="/minesweeper" 
+                      element={
+                        <motion.div
+                          className="page-container"
+                          key="minesweeper"
+                          initial="initial"
+                          animate="enter"
+                          exit="exit"
+                          variants={pageVariants}
+                        >
+                          <Minesweeper />
+                        </motion.div>
+                      } 
+                    />
+                    <Route 
+                      path="/blackjack" 
+                      element={
+                        <motion.div
+                          className="page-container"
+                          key="blackjack"
+                          initial="initial"
+                          animate="enter"
+                          exit="exit"
+                          variants={pageVariants}
+                        >
+                          <Blackjack />
+                        </motion.div>
+                      } 
+                    />
+                    <Route 
+                      path="/settings" 
+                      element={
+                        <motion.div
+                          className="page-container"
+                          key="settings"
+                          initial="initial"
+                          animate="enter"
+                          exit="exit"
+                          variants={pageVariants}
+                        >
+                          <Settings />
+                        </motion.div>
+                      } 
+                    />
+                  </Routes>
+                </AnimatePresence>
+              </main>
+            </>
+          )}
+        </BrowserRouter>
       </div>
-    </BrowserRouter>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;

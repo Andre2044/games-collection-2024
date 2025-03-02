@@ -1,173 +1,245 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Gamepad2, Sun, Moon, Sparkles, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { NavLink, useLocation } from 'react-router-dom';
+import { 
+  ChevronRight, 
+  Gamepad2, 
+  Settings, 
+  Home,
+  Diamond, 
+  Sparkles
+} from 'lucide-react';
 
-interface SidebarProps {}
+interface SidebarProps {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+}
 
-const Sidebar: React.FC<SidebarProps> = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [animation, setAnimation] = useState(false);
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   const location = useLocation();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Initialize theme from localStorage or system preference
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-    setTheme(initialTheme);
-    document.body.classList.toggle('dark-theme', initialTheme === 'dark');
+    setMounted(true);
+    return () => setMounted(false);
   }, []);
 
-  useEffect(() => {
-    // Trigger animation effect when sidebar opens
-    if (isOpen) {
-      setAnimation(true);
+  // Animation variants
+  const sidebarVariants: Variants = {
+    open: { 
+      width: '250px',
+      transition: { 
+        type: 'spring', 
+        stiffness: 300, 
+        damping: 30,
+        delayChildren: 0.2,
+        staggerChildren: 0.1
+      }
+    },
+    closed: { 
+      width: '60px',
+      transition: { 
+        type: 'spring', 
+        stiffness: 500, 
+        damping: 40,
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        when: "afterChildren"
+      } 
     }
-  }, [isOpen]);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.body.classList.toggle('dark-theme', newTheme === 'dark');
-    localStorage.setItem('theme', newTheme);
   };
 
+  const itemVariants: Variants = {
+    open: { 
+      opacity: 1, 
+      x: 0,
+      transition: { type: 'spring', stiffness: 300, damping: 24 }
+    },
+    closed: { 
+      opacity: 0, 
+      x: -20,
+      transition: { type: 'spring', stiffness: 500, damping: 28 }
+    }
+  };
+
+  const buttonVariants: Variants = {
+    hover: { scale: 1.1, rotate: 0 },
+    initial: { scale: 1, rotate: 0 },
+    closedHover: { scale: 1.1 },
+    openHover: { scale: 1.1, rotate: -180 }
+  };
+
+  const sparkleVariants: Variants = {
+    animate: {
+      opacity: [0.4, 1, 0.4],
+      scale: [0.8, 1.2, 0.8],
+      rotate: [0, 15, 0, -15, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        repeatType: "mirror"
+      }
+    }
+  }
+
+  const activeLink = "bg-blue-900/30 text-blue-300 border-l-4 border-blue-400 pl-3";
+  const normalLink = "text-slate-300 hover:bg-slate-800/50 hover:text-blue-200 pl-4";
+
   return (
-    <>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 p-2.5 rounded-lg bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transform hover:scale-105 active:scale-95 focus:outline-none"
-        aria-label={isOpen ? 'Close menu' : 'Open menu'}
+    <motion.div 
+      className="fixed left-0 top-0 h-full z-20 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 border-r border-slate-700/50"
+      variants={sidebarVariants}
+      initial={false}
+      animate={isOpen ? 'open' : 'closed'}
+    >
+      {/* Toggle Button */}
+      <motion.button
+        className="absolute -right-3 top-12 flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white border-2 border-slate-800 shadow-lg"
+        onClick={toggleSidebar}
+        variants={buttonVariants}
+        initial="initial"
+        whileHover={isOpen ? "openHover" : "closedHover"}
+        aria-label="Toggle Sidebar"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+        <motion.div
+          animate={{ rotate: isOpen ? -180 : 0 }}
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+        >
+          <ChevronRight size={16} />
+        </motion.div>
+      </motion.button>
 
-      <div
-        className={`fixed top-0 left-0 h-full shadow-2xl transition-all duration-300 ease-in-out z-40 ${
-          isOpen ? 'w-72' : 'w-0'
-        } overflow-hidden backdrop-blur-sm bg-white/95 dark:bg-gray-800/95 text-gray-800 dark:text-gray-200 border-r border-gray-200 dark:border-gray-700`}
-      >
-        <div className="p-6 pt-20 flex flex-col h-full">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Gamepad2 className="text-indigo-600 dark:text-indigo-400" size={28} />
-                <Sparkles className="text-yellow-500 absolute -top-2 -right-2" size={14} />
-              </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
-                Games Collection
-              </h2>
-            </div>
-          </div>
-          
-          <nav className="flex-grow">
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/"
-                  className={`group flex items-center gap-3 p-3.5 rounded-xl transition-all duration-200 ${
-                    location.pathname === '/' 
-                      ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 shadow-md'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="text-xl relative">
-                    🎮
-                    {location.pathname === '/' && 
-                      <span className="absolute -right-1 -top-1 w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
-                    }
-                  </span>
-                  <span className="font-medium">Minesweeper</span>
-                  <ChevronRight 
-                    size={16} 
-                    className={`ml-auto transform transition-transform duration-200 ${location.pathname === '/' ? 'opacity-100' : 'opacity-0 group-hover:opacity-40'}`} 
-                  />
-                </Link>
-              </li>
-              <li 
-                className={`transform transition-all duration-500 ${animation ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'}`}
-                style={{ transitionDelay: '100ms' }}
-              >
-                <Link
-                  to="/blackjack"
-                  className={`group flex items-center gap-3 p-3.5 rounded-xl transition-all duration-200 ${
-                    location.pathname === '/blackjack'
-                      ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 shadow-md'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="text-xl relative">
-                    🎲
-                    {location.pathname === '/blackjack' && 
-                      <span className="absolute -right-1 -top-1 w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
-                    }
-                  </span>
-                  <span className="font-medium">Blackjack</span>
-                  <ChevronRight 
-                    size={16} 
-                    className={`ml-auto transform transition-transform duration-200 ${location.pathname === '/blackjack' ? 'opacity-100' : 'opacity-0 group-hover:opacity-40'}`} 
-                  />
-                </Link>
-              </li>
-            </ul>
-            
-            <div className="mt-8 mb-4">
-              <div className="bg-gray-100 dark:bg-gray-700/50 h-[1px] w-full"></div>
-              <div className="py-2.5 px-4 text-xs uppercase font-medium text-gray-500 dark:text-gray-400">
-                Coming Soon
-              </div>
-              <ul className="space-y-1 opacity-60">
-                <li className="p-3.5 rounded-xl text-gray-500 dark:text-gray-400 flex items-center gap-3">
-                  <span className="text-xl">♠️</span>
-                  <span className="font-medium">Poker</span>
-                </li>
-                <li className="p-3.5 rounded-xl text-gray-500 dark:text-gray-400 flex items-center gap-3">
-                  <span className="text-xl">🎯</span>
-                  <span className="font-medium">Darts</span>
-                </li>
-              </ul>
-            </div>
-          </nav>
-
-          <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
-            <button
-              onClick={toggleTheme}
-              className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
-              aria-label={theme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'}
+      <div className="flex flex-col h-full overflow-hidden">
+        {/* Sidebar Header */}
+        <div className="py-6 px-4 flex items-center justify-center">
+          <motion.div 
+            className="flex items-center justify-center"
+            variants={itemVariants}
+          >
+            <motion.div
+              variants={sparkleVariants}
+              animate="animate"
+              className="mr-2"
             >
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gray-200 dark:bg-gray-600">
-                  {theme === 'light' ? (
-                    <Moon size={18} className="text-gray-600 dark:text-gray-400" />
-                  ) : (
-                    <Sun size={18} className="text-gray-600 dark:text-gray-400" />
-                  )}
-                </div>
-                <span className="text-sm font-medium">
-                  {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-                </span>
-              </div>
-              <div className="relative">
-                <div className={`w-10 h-5 rounded-full transition-colors duration-300 ${theme === 'light' ? 'bg-gray-300' : 'bg-indigo-500'}`}></div>
-                <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 ${theme === 'light' ? '' : 'translate-x-5'}`}></div>
-              </div>
-            </button>
-          </div>
+              <Sparkles className="text-blue-400" size={20} />
+            </motion.div>
+            
+            {isOpen && (
+              <motion.h1 
+                className="font-bold text-xl bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                Games Collection
+              </motion.h1>
+            )}
+          </motion.div>
+        </div>
+
+        {/* Sidebar Content */}
+        <nav className="flex flex-col flex-grow space-y-1 px-2 py-4">
+          <AnimatePresence>
+            {/* Home Link */}
+            <motion.div 
+              key="home-link"
+              variants={itemVariants}
+              className="overflow-hidden"
+            >
+              <NavLink 
+                to="/" 
+                className={`flex items-center p-2 rounded-lg transition-all duration-200 ${location.pathname === '/' ? activeLink : normalLink}`}
+              >
+                <Home size={20} className="flex-shrink-0" />
+                {isOpen && (
+                  <motion.span 
+                    className="ml-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    Home
+                  </motion.span>
+                )}
+              </NavLink>
+            </motion.div>
+
+            {/* Minesweeper Link */}
+            <motion.div 
+              key="minesweeper-link"
+              variants={itemVariants}
+              className="overflow-hidden"
+            >
+              <NavLink 
+                to="/minesweeper" 
+                className={`flex items-center p-2 rounded-lg transition-all duration-200 ${location.pathname === '/minesweeper' ? activeLink : normalLink}`}
+              >
+                <Diamond size={20} className="flex-shrink-0" />
+                {isOpen && (
+                  <motion.span 
+                    className="ml-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    Minesweeper
+                  </motion.span>
+                )}
+              </NavLink>
+            </motion.div>
+
+            {/* Blackjack Link */}
+            <motion.div 
+              key="blackjack-link"
+              variants={itemVariants}
+              className="overflow-hidden"
+            >
+              <NavLink 
+                to="/blackjack" 
+                className={`flex items-center p-2 rounded-lg transition-all duration-200 ${location.pathname === '/blackjack' ? activeLink : normalLink}`}
+              >
+                <Gamepad2 size={20} className="flex-shrink-0" />
+                {isOpen && (
+                  <motion.span 
+                    className="ml-3"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    Blackjack
+                  </motion.span>
+                )}
+              </NavLink>
+            </motion.div>
+          </AnimatePresence>
+        </nav>
+
+        {/* Sidebar Footer */}
+        <div className="px-2 py-4 border-t border-slate-700/30">
+          <motion.div 
+            variants={itemVariants}
+            className="overflow-hidden"
+          >
+            <NavLink 
+              to="/settings" 
+              className={`flex items-center p-2 rounded-lg transition-all duration-200 ${location.pathname === '/settings' ? activeLink : normalLink}`}
+            >
+              <Settings size={20} className="flex-shrink-0" />
+              {isOpen && (
+                <motion.span 
+                  className="ml-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  Settings
+                </motion.span>
+              )}
+            </NavLink>
+          </motion.div>
         </div>
       </div>
-
-      {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 dark:bg-black/60 z-30 backdrop-blur-sm transition-opacity duration-300"
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-    </>
+    </motion.div>
   );
 };
 
