@@ -1,3 +1,217 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Card and Table Styling */
+.blackjack-table {
+  @apply relative bg-gradient-to-b from-green-800 to-green-900 rounded-3xl p-8 shadow-2xl;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  border: 12px solid #45341d;
+}
+
+.playing-card {
+  @apply relative transition-all duration-300 bg-white dark:bg-gray-200 rounded-md shadow-lg overflow-hidden transform-gpu;
+  width: 120px;
+  height: 170px;
+  perspective: 1000px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.playing-card.hearts, .playing-card.diamonds {
+  @apply text-red-600;
+}
+
+.playing-card.spades, .playing-card.clubs {
+  @apply text-gray-900;
+}
+
+.playing-card-inner {
+  @apply flex flex-col justify-between p-2 h-full w-full absolute;
+}
+
+.card-value-top {
+  @apply text-xl font-bold self-start;
+}
+
+.card-suit-top {
+  @apply text-xl -mt-2;
+}
+
+.card-value-bottom {
+  @apply text-xl font-bold self-end rotate-180;
+}
+
+.card-suit-bottom {
+  @apply text-xl -mt-2 rotate-180;
+}
+
+.card-suit-center {
+  @apply text-4xl font-bold absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+}
+
+.card-back {
+  @apply absolute inset-0 bg-indigo-700 dark:bg-indigo-800;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  border: 4px solid white;
+  border-radius: 7px;
+}
+
+/* Game Controls and UI */
+.bet-button {
+  @apply px-4 py-2 text-lg font-medium text-white rounded-lg shadow-lg transition-all transform-gpu hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  background: linear-gradient(to bottom, #f59e0b, #d97706);
+}
+
+.custom-bet-input {
+  @apply px-4 py-2 text-lg font-medium text-center rounded-lg shadow-lg border-2 border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.game-button {
+  @apply px-6 py-3 text-lg font-medium text-white rounded-lg shadow-lg transition-all transform-gpu hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.button-hit {
+  background: linear-gradient(to bottom, #3b82f6, #1d4ed8);
+  @apply focus:ring-blue-500;
+}
+
+.button-stand {
+  background: linear-gradient(to bottom, #ef4444, #b91c1c);
+  @apply focus:ring-red-500;
+}
+
+.button-double {
+  background: linear-gradient(to bottom, #10b981, #047857);
+  @apply focus:ring-green-500;
+}
+
+.button-new-game {
+  background: linear-gradient(to bottom, #8b5cf6, #6d28d9);
+  @apply focus:ring-purple-500;
+}
+
+/* Game Status and Animations */
+.chip {
+  @apply flex items-center justify-center text-white font-bold rounded-full border-4 shadow-lg transform transition-all duration-300;
+  width: 60px;
+  height: 60px;
+}
+
+.chip-10 {
+  @apply bg-blue-500 border-blue-300;
+}
+
+.chip-25 {
+  @apply bg-green-500 border-green-300;
+}
+
+.chip-50 {
+  @apply bg-red-500 border-red-300;
+}
+
+.chip-100 {
+  @apply bg-purple-500 border-purple-300;
+}
+
+.balance-display {
+  @apply flex items-center gap-2 px-4 py-2 bg-black text-green-400 rounded-lg shadow-lg font-mono font-bold;
+  border: 2px solid #2C9C4C;
+}
+
+.bet-display {
+  @apply flex items-center gap-2 px-4 py-2 bg-black text-yellow-400 rounded-lg shadow-lg font-mono font-bold;
+  border: 2px solid #A78C3A;
+}
+
+.result-message {
+  @apply text-2xl font-bold text-center py-3 px-6 rounded-lg shadow-lg transform animate-bounce;
+}
+
+.message-win {
+  @apply bg-green-500 text-white;
+}
+
+.message-lose {
+  @apply bg-red-500 text-white;
+}
+
+.message-push {
+  @apply bg-yellow-500 text-white;
+}
+
+/* Loan Modal */
+.loan-modal {
+  @apply bg-gray-900 bg-opacity-95 p-8 rounded-2xl shadow-2xl border-2 border-yellow-500 backdrop-blur-md;
+  max-width: 500px;
+}
+
+.loan-option {
+  @apply p-4 rounded-lg transition-all hover:bg-yellow-500 hover:bg-opacity-10 cursor-pointer border-2 border-transparent hover:border-yellow-500;
+}
+
+.loan-amount {
+  @apply text-2xl font-bold text-yellow-500;
+}
+
+.loan-details {
+  @apply text-gray-400;
+}
+
+/* Animations */
+@keyframes dealCard {
+  0% {
+    transform: translateY(-200px) rotate(5deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) rotate(0);
+    opacity: 1;
+  }
+}
+
+.deal-animation {
+  animation: dealCard 0.5s ease-out forwards;
+}
+
+@keyframes chipBounce {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.chip-animation {
+  animation: chipBounce 0.5s ease-out forwards;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .playing-card {
+    width: 80px;
+    height: 120px;
+  }
+  
+  .card-value-top, .card-value-bottom {
+    @apply text-base;
+  }
+  
+  .card-suit-center {
+    @apply text-2xl;
+  }
+  
+  .chip {
+    width: 40px;
+    height: 40px;
+    @apply text-sm;
+  }
+}

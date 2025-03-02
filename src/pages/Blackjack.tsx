@@ -61,6 +61,30 @@ const calculateHandValue = (hand: Card[]): number => {
   return value;
 };
 
+// Add these helper functions to render proper suit symbols
+const getSuitSymbol = (suit: string) => {
+  switch(suit) {
+    case '♥': return '♥';
+    case '♦': return '♦';
+    case '♠': return '♠';
+    case '♣': return '♣';
+    default: return suit;
+  }
+};
+
+const getSuitClass = (suit: string) => {
+  switch(suit) {
+    case '♥': 
+    case '♦': 
+      return 'hearts';
+    case '♠': 
+    case '♣': 
+      return 'spades';
+    default: 
+      return '';
+  }
+};
+
 const Blackjack: React.FC = () => {
   const [deck, setDeck] = useState<Card[]>([]);
   const [playerHand, setPlayerHand] = useState<Card[]>([]);
@@ -214,159 +238,189 @@ const Blackjack: React.FC = () => {
     setShowLoanModal(false);
   };
 
+  // Replace renderHand function with this improved version
   const renderHand = (hand: Card[], isDealer: boolean = false) => (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap justify-center">
       {hand.map((card, index) => (
         <div
           key={index}
-          className={`card ${card.suit === '♥' || card.suit === '♦' ? 'text-red-500' : 'text-black'} 
-            bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md`}
+          className={`playing-card ${getSuitClass(card.suit)} ${index > 0 ? 'deal-animation' : ''}`}
+          style={{ animationDelay: `${index * 0.2}s` }}
         >
-          {isDealer && index === 1 && gameStatus === 'playing' ? 
-            '🂠' : 
-            `${card.value}${card.suit}`}
+          {isDealer && index === 1 && gameStatus === 'playing' ? (
+            <div className="card-back"></div>
+          ) : (
+            <div className="playing-card-inner">
+              <div className="flex flex-col">
+                <span className="card-value-top">{card.value}</span>
+                <span className="card-suit-top">{getSuitSymbol(card.suit)}</span>
+              </div>
+              <span className="card-suit-center">{getSuitSymbol(card.suit)}</span>
+              <div className="flex flex-col">
+                <span className="card-value-bottom">{card.value}</span>
+                <span className="card-suit-bottom">{getSuitSymbol(card.suit)}</span>
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </div>
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <Wallet className="text-green-500" />
-          <span className="text-lg font-bold">Balance: ${playerBalance}</span>
+    <div className="container mx-auto p-6">
+      <div className="mb-6 flex justify-between items-center">
+        <div className="balance-display">
+          <Wallet className="text-green-400" size={24} />
+          <span>${playerBalance.toLocaleString()}</span>
         </div>
+        
+        {currentBet > 0 && (
+          <div className="bet-display">
+            <DollarSign className="text-yellow-400" size={24} />
+            <span>Current Bet: ${currentBet}</span>
+          </div>
+        )}
+        
         <button
           onClick={() => setShowLoanModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-lg hover:from-purple-700 hover:to-purple-900 transition-all transform hover:scale-105 shadow-lg"
         >
           <PiggyBank size={20} />
-          Take Loan
+          Loan Options
         </button>
       </div>
 
-      {gameStatus === 'betting' && (
-        <div className="betting-controls mb-4">
-          <div className="flex gap-2 mb-2">
-            <button
-              onClick={() => handleBet(10)}
-              className="bet-button"
-            >
-              Bet $10
-            </button>
-            <button
-              onClick={() => handleBet(25)}
-              className="bet-button"
-            >
-              Bet $25
-            </button>
-            <button
-              onClick={() => handleBet(50)}
-              className="bet-button"
-            >
-              Bet $50
-            </button>
-            <button
-              onClick={() => handleBet(100)}
-              className="bet-button"
-            >
-              Bet $100
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={customBetAmount}
-              onChange={(e) => setCustomBetAmount(e.target.value)}
-              placeholder="Enter custom bet"
-              className="p-2 border rounded"
-            />
-            <button
-              onClick={handleCustomBet}
-              className="bet-button"
-            >
-              Place Bet
-            </button>
-          </div>
-        </div>
-      )}
-
-      {gameStatus !== 'betting' && (
-        <div className="game-board">
-          <div className="mb-4">
-            <h2 className="text-lg font-bold mb-2">Dealer's Hand</h2>
-            {renderHand(dealerHand, true)}
-          </div>
-          
-          <div className="mb-4">
-            <h2 className="text-lg font-bold mb-2">Your Hand</h2>
-            {renderHand(playerHand)}
-            <p className="mt-2">Value: {calculateHandValue(playerHand)}</p>
-          </div>
-
-          {gameStatus === 'playing' && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleHit}
-                className="game-button"
-              >
-                Hit
-              </button>
-              <button
-                onClick={handleStand}
-                className="game-button"
-              >
-                Stand
-              </button>
-              {playerHand.length === 2 && (
+      <div className="blackjack-table">
+        {gameStatus === 'betting' ? (
+          <div className="betting-controls py-10">
+            <h2 className="text-3xl font-bold text-center text-white mb-8 drop-shadow-md">Place Your Bet</h2>
+            
+            <div className="flex justify-center gap-4 mb-8">
+              {[10, 25, 50, 100].map(amount => (
                 <button
-                  onClick={handleDoubleDown}
-                  className="game-button"
-                  disabled={playerBalance < currentBet}
+                  key={amount}
+                  onClick={() => handleBet(amount)}
+                  className="chip-animation"
+                  style={{ animationDelay: `${amount * 0.002}s` }}
+                  disabled={amount > playerBalance}
                 >
-                  Double Down
+                  <div className={`chip chip-${amount} ${amount > playerBalance ? 'opacity-50' : ''}`}>
+                    ${amount}
+                  </div>
                 </button>
+              ))}
+            </div>
+            
+            <div className="flex justify-center gap-2 max-w-md mx-auto">
+              <input
+                type="number"
+                value={customBetAmount}
+                onChange={(e) => setCustomBetAmount(e.target.value)}
+                placeholder="Custom bet"
+                className="custom-bet-input"
+                min="1"
+                max={playerBalance}
+              />
+              <button
+                onClick={handleCustomBet}
+                className="bet-button"
+                disabled={!customBetAmount || parseInt(customBetAmount) <= 0 || parseInt(customBetAmount) > playerBalance}
+              >
+                Place Bet
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="game-board">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4 text-white drop-shadow-md">Dealer's Hand</h2>
+              {renderHand(dealerHand, true)}
+              {gameStatus === 'finished' && (
+                <p className="mt-2 text-center text-white text-lg">
+                  Value: {calculateHandValue(dealerHand)}
+                </p>
               )}
             </div>
-          )}
-
-          {gameStatus === 'finished' && (
-            <div className="mt-4">
-              <p className="text-lg font-bold mb-2">{message}</p>
-              <button
-                onClick={() => {
-                  initializeDeck();
-                  setGameStatus('betting');
-                }}
-                className="game-button flex items-center gap-2"
-              >
-                <RefreshCw size={20} />
-                New Game
-              </button>
+            
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4 text-white drop-shadow-md">Your Hand</h2>
+              {renderHand(playerHand)}
+              <p className="mt-2 text-center text-white text-lg">
+                Value: {calculateHandValue(playerHand)}
+              </p>
             </div>
-          )}
-        </div>
-      )}
+
+            {gameStatus === 'playing' && (
+              <div className="flex gap-3 justify-center">
+                <button
+                  onClick={handleHit}
+                  className="game-button button-hit"
+                >
+                  Hit
+                </button>
+                <button
+                  onClick={handleStand}
+                  className="game-button button-stand"
+                >
+                  Stand
+                </button>
+                {playerHand.length === 2 && (
+                  <button
+                    onClick={handleDoubleDown}
+                    className="game-button button-double"
+                    disabled={playerBalance < currentBet}
+                  >
+                    Double Down
+                  </button>
+                )}
+              </div>
+            )}
+
+            {gameStatus === 'finished' && (
+              <div className="mt-8 flex flex-col items-center">
+                <div className={`result-message ${
+                  message.includes('win') ? 'message-win' : 
+                  message.includes('lose') || message.includes('Bust') ? 'message-lose' : 
+                  'message-push'
+                }`}>
+                  {message}
+                </div>
+                
+                <button
+                  onClick={() => {
+                    initializeDeck();
+                    setGameStatus('betting');
+                  }}
+                  className="game-button button-new-game mt-6 flex items-center gap-2"
+                >
+                  <RefreshCw size={20} />
+                  New Game
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {showLoanModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Available Loans</h2>
-            <div className="space-y-4">
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="loan-modal">
+            <h2 className="text-2xl font-bold mb-6 text-white border-b border-yellow-500 pb-4">Casino Loans</h2>
+            <div className="space-y-4 mb-6">
               {LOAN_OFFERS.map((offer, index) => (
                 <div
                   key={index}
-                  className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                  className="loan-option"
                   onClick={() => takeLoan(offer)}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold">${offer.amount}</span>
-                    <span className="text-sm text-gray-500">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="loan-amount">${offer.amount}</span>
+                    <span className="loan-details">
                       {offer.interestRate * 100}% interest
                     </span>
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="loan-details">
                     Due in {offer.dueInDays} days
                   </div>
                 </div>
@@ -374,17 +428,11 @@ const Blackjack: React.FC = () => {
             </div>
             <button
               onClick={() => setShowLoanModal(false)}
-              className="mt-4 w-full p-2 bg-gray-200 dark:bg-gray-600 rounded hover:bg-gray-300 dark:hover:bg-gray-500"
+              className="w-full p-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700"
             >
               Cancel
             </button>
           </div>
-        </div>
-      )}
-
-      {message && (
-        <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded">
-          {message}
         </div>
       )}
     </div>
