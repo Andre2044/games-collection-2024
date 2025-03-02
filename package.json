@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
@@ -31,6 +34,7 @@
     "terser": "^5.39.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.3.0",
-    "vite": "^5.4.2"
-  }
+    "vite": "^5.4.14"
+  },
+  "homepage": "https://andre2044.github.io/games-collection-2024/"
 }
