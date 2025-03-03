@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import Minesweeper from './pages/Minesweeper';
 import Blackjack from './pages/Blackjack';
 import Settings from './pages/Settings';
+import Home from './pages/Home';
 import Footer from './components/Footer';
 import FaviconSwitcher from './components/FaviconSwitcher';
 import './styles/main.css';
@@ -71,7 +72,7 @@ const App: React.FC = () => {
                           exit="exit"
                           variants={pageVariants}
                         >
-                          <Minesweeper />
+                          <Home />
                         </motion.div>
                       } 
                     />
